@@ -1,6 +1,8 @@
 import streamlit as st
 import json
 import os
+import requests
+import os
 from geo_optimizer import GeoOptimizer
 
 SAVE_FILE = "last_inputs.json"
@@ -22,7 +24,9 @@ def save_inputs():
         'api_key': st.session_state.get('api_key', ''),
         'business_name': st.session_state.get('business_name', ''),
         'target_topic': st.session_state.get('target_topic', ''),
-        'original_content': st.session_state.get('original_content', '')
+        'original_content': st.session_state.get('original_content', ''),
+        'webhook_url': st.session_state.get('webhook_url', ''),
+        'auth_token': st.session_state.get('auth_token', '')
     }
     with open(SAVE_FILE, 'w') as f:
         json.dump(data, f)
@@ -115,3 +119,42 @@ if st.button("Optimize for AI Search Engines", type="primary"):
                         st.markdown(f"**Q: {faq.get('question', '')}**")
                         st.markdown(f"A: {faq.get('answer', '')}")
                         st.divider()
+
+                st.divider()
+                st.subheader("🚀 Automate Deployment")
+                st.markdown("Push these generated assets directly to your CMS (WordPress, Webflow, Shopify) or automation pipeline (Zapier/Make).")
+                
+                with st.expander("Configure Webhook / REST API"):
+                    col_webhook, col_token = st.columns(2)
+                    with col_webhook:
+                        webhook_url = st.text_input("Webhook URL", placeholder="https://hooks.zapier.com/...", key="webhook_url", on_change=save_inputs)
+                    with col_token:
+                        auth_token = st.text_input("Authorization Token (Optional)", type="password", key="auth_token", on_change=save_inputs)
+                        
+                    if st.button("Publish Assets Automatically", type="primary"):
+                        if not webhook_url:
+                            st.warning("Please enter a Webhook URL first.")
+                        else:
+                            with st.spinner("Publishing to your site..."):
+                                headers = {"Content-Type": "application/json"}
+                                if auth_token:
+                                    headers["Authorization"] = f"Bearer {auth_token}"
+                                
+                                payload = {
+                                    "business_name": business_name,
+                                    "target_topic": target_topic,
+                                    "answer_first_summary": result.get("answer_first_summary"),
+                                    "structured_content": result.get("structured_content"),
+                                    "json_ld_schema": result.get("json_ld_schema"),
+                                    "suggested_faqs": result.get("suggested_faqs")
+                                }
+                                
+                                try:
+                                    resp = requests.post(webhook_url, json=payload, headers=headers, timeout=10)
+                                    if resp.status_code in [200, 201, 202, 204]:
+                                        st.success("✅ Successfully published! Your website or automation pipeline received the data.")
+                                    else:
+                                        st.error(f"Failed to publish. Server returned status code: {resp.status_code}")
+                                        st.write(resp.text)
+                                except Exception as e:
+                                    st.error(f"Connection Error: {str(e)}")

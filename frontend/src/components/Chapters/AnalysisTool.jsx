@@ -9,7 +9,9 @@ export function AnalysisTool({ onAnalysisComplete }) {
     name: '',
     industry: '',
     description: '',
-    url: ''
+    url: '',
+    strategy: 'Comprehensive',
+    apiKey: ''
   });
 
   const handleSubmit = async (e) => {
@@ -18,7 +20,7 @@ export function AnalysisTool({ onAnalysisComplete }) {
     
     setIsAnalyzing(true);
     
-    // Simulate API Call
+    // Call API
     try {
       const results = await analyzeGEOVisibility(formData);
       onAnalysisComplete(results);
@@ -42,7 +44,7 @@ export function AnalysisTool({ onAnalysisComplete }) {
           >
             <GlassCard className="p-8 md:p-12 border-primary/30 shadow-[0_0_50px_rgba(0,229,255,0.1)]">
               <h2 className="text-3xl font-display font-bold mb-2">Analyze Your AI Visibility</h2>
-              <p className="text-textSecondary mb-8">Enter your business details to run a simulated generative engine analysis.</p>
+              <p className="text-textSecondary mb-8">Enter your business details to run a generative engine analysis.</p>
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
@@ -76,6 +78,33 @@ export function AnalysisTool({ onAnalysisComplete }) {
                       placeholder="https://"
                       value={formData.url}
                       onChange={e => setFormData({...formData, url: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-textSecondary mb-2">GEO Optimization Strategy</label>
+                    <select 
+                      className="w-full bg-background/50 border border-borderBase rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-primary transition-all"
+                      value={formData.strategy}
+                      onChange={e => setFormData({...formData, strategy: e.target.value})}
+                    >
+                      <option value="Comprehensive">Comprehensive (Combined)</option>
+                      <option value="Answer-First">Answer-First (Best for direct answers)</option>
+                      <option value="Cite-Sources">Cite-Sources (Link to high-authority sites)</option>
+                      <option value="Data-Backed">Data-Backed (Rich in statistics/numbers)</option>
+                      <option value="Simple & Fluent">Simple & Fluent (Conversational search)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-textSecondary mb-2">Gemini API Key (Optional)</label>
+                    <input 
+                      type="password" 
+                      className="w-full bg-background/50 border border-borderBase rounded-lg px-4 py-3 text-textPrimary focus:outline-none focus:border-primary transition-all"
+                      placeholder="If empty, server key is used"
+                      value={formData.apiKey}
+                      onChange={e => setFormData({...formData, apiKey: e.target.value})}
                     />
                   </div>
                 </div>
