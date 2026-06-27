@@ -16,7 +16,7 @@ export function Results({ data }) {
   const [openFaqIdx, setOpenFaqIdx] = useState({});
   
   // Publishing form state
-  const [webhookUrl, setWebhookUrl] = useState('https://hook.eu1.make.com/5wsuswmt8b92ha1dghcvpe48yihrxmsd');
+  const [webhookUrl, setWebhookUrl] = useState('https://hook.eu1.make.com/w9235k2fayyoqcbkbp665jil0eoy8n2v');
   const [authToken, setAuthToken] = useState('');
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishStatus, setPublishStatus] = useState(null); // 'success' | 'error'
